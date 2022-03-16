@@ -1,3 +1,17 @@
-# microservice specific routes
+# Ping endpoint
+GET         /ping/ping                     uk.gov.hmrc.bars.stub.controllers.PingController.ping()
 
-GET        /hello-world             uk.gov.hmrc.bankaccountreputationstubs.controllers.MicroserviceHelloWorldController.hello
+# Kenshoo metrics https://github.com/kenshoo/metrics-play
+GET         /admin/metrics                 @com.kenshoo.play.metrics.MetricsController.metrics
+
+#Assess Endpoints
+
+POST        /personal/v3/assess            uk.gov.hmrc.bars.stub.controllers.PersonalAssessStubController.assess()
+POST        /business/v2/assess            uk.gov.hmrc.bars.stub.controllers.BusinessAssessStubController.assess()
+POST        /verify/personal               uk.gov.hmrc.bars.stub.controllers.PersonalAssessStubController.assessV4()
+POST        /verify/business               uk.gov.hmrc.bars.stub.controllers.BusinessAssessStubController.assessV3()
+
+# Collect EISCD Sort code data
+GET         /metadata/:sc                  uk.gov.hmrc.bars.stub.controllers.MetadataStubController.metadata(sc)
+POST        /v2/validateBankDetails        uk.gov.hmrc.bars.stub.controllers.ValidateStubController.validate()
+POST        /validate/bank-details         uk.gov.hmrc.bars.stub.controllers.ValidateStubController.validateV3()
