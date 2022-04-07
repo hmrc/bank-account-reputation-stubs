@@ -19,11 +19,11 @@ package uk.gov.hmrc.bars.stub.controllers
 import play.api.http.Status
 import play.api.libs.json._
 import play.api.mvc._
-import uk.gov.hmrc.bars.stub.helpers.Data.checkBusinessName
+import uk.gov.hmrc.bars.stub.helpers.Data.{checkBusinessName, checkExactBusinessNameMatch}
 import uk.gov.hmrc.bars.stub.helpers.EISCDHelper.generateIBAN
 import uk.gov.hmrc.bars.stub.helpers.ValidationHelper.{validateAccount, validateAddress}
 import uk.gov.hmrc.bars.stub.helpers._
-import uk.gov.hmrc.bars.stub.models.AssessmentType.{Inapplicable, Indeterminate, No}
+import uk.gov.hmrc.bars.stub.models.AssessmentType.{Inapplicable, Indeterminate, No, Partial}
 import uk.gov.hmrc.bars.stub.models.{EISCDData, _}
 import uk.gov.hmrc.bars.stub.models.components.{AccountDetails, Business}
 import uk.gov.hmrc.bars.stub.models.request.BusinessRequest
@@ -110,7 +110,7 @@ class BusinessAssessStubController @Inject()(businessAccountData: Map[AccountDet
           sortCodeBankName = accountData.get.sortCodeBankName,
           nonStandardAccountDetailsRequiredForBacs = if (accountData.get.accountNumberWithSortCodeIsValid == No) Inapplicable else accountData.get.nonStandardAccountDetailsRequiredForBacs,
           accountExists = if (accountData.get.accountNumberWithSortCodeIsValid == No) Inapplicable else accountData.get.accountExists,
-          companyNameMatches = if (accountData.get.accountNumberWithSortCodeIsValid == No) Inapplicable else checkBusinessName(accountData.get.companyName, business),
+          companyNameMatches = if (accountData.get.accountNumberWithSortCodeIsValid == No) Inapplicable else checkExactBusinessNameMatch(accountData.get.companyName, business),
           companyPostCodeMatches = if (accountData.get.accountNumberWithSortCodeIsValid == No) Inapplicable else accountData.get.companyPostCodeMatches,
           companyRegistrationNumberMatches = if (accountData.get.accountNumberWithSortCodeIsValid == No) Inapplicable else accountData.get.companyRegistrationNumberMatches,
           sortCodeSupportsDirectDebit = accountData.get.sortCodeSupportsDirectDebit,
@@ -145,7 +145,8 @@ class BusinessAssessStubController @Inject()(businessAccountData: Map[AccountDet
           nameMatches = if (accountData.get.accountNumberWithSortCodeIsValid == No) Inapplicable else checkBusinessName(accountData.get.companyName, business),
           sortCodeSupportsDirectDebit = accountData.get.sortCodeSupportsDirectDebit,
           sortCodeSupportsDirectCredit = accountData.get.sortCodeSupportsDirectCredit,
-          iban = if (accountData.get.accountNumberWithSortCodeIsValid == No) None else generateIBAN(branch.data.ibanPrefix, account)
+          iban = if (accountData.get.accountNumberWithSortCodeIsValid == No) None else generateIBAN(branch.data.ibanPrefix, account),
+          accountName = if (checkBusinessName(accountData.get.companyName, business) == Partial) Some(accountData.get.companyName) else None
         )
     }
   }

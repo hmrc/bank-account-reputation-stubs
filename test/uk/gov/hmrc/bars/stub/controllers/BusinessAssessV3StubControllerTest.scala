@@ -215,4 +215,32 @@ class BusinessAssessV3StubControllerTest extends AnyFunSuite {
     assertThat(result.value.get.get.header.status).isEqualTo(Status.OK)
     assertThat(initResponse).isEqualTo(expectedResult)
   }
+
+  test("Account is known and name is a partial match") {
+    val expectedResult = BusinessAssessmentV3(
+      accountNumberIsWellFormatted = Yes,
+      sortCodeIsPresentOnEISCD = Yes,
+      sortCodeBankName = Some("BARCLAYS BANK UK PLC"),
+      nonStandardAccountDetailsRequiredForBacs = No,
+      accountExists = Yes,
+      nameMatches = Partial,
+      sortCodeSupportsDirectDebit = Yes,
+      sortCodeSupportsDirectCredit = Yes,
+      iban = Some("GB21BARC20710686473611"),
+      accountName = Some("Security Engima")
+    )
+
+    val fakeRequest = FakeRequest(method = "POST", path = s"/verify/business")
+      .withHeaders(DEFAULT_TEST_HEADER)
+      .withJsonBody(Json.toJson(BusinessRequest(
+        AccountDetails("207106", "86473611"),
+        Some(Business(companyName = "Security"))
+      )))
+
+    val result: Future[Result] = businessAssessStubController.assessV3.apply(fakeRequest)
+    val initResponse = contentAsJson(result)(Timeout.zero).as[BusinessAssessmentV3]
+
+    assertThat(result.value.get.get.header.status).isEqualTo(Status.OK)
+    assertThat(initResponse).isEqualTo(expectedResult)
+  }
 }

@@ -23,6 +23,7 @@ object AssessmentType {
   final val Error = "error"
   final val Indeterminate = "indeterminate"
   final val Inapplicable = "inapplicable"
+  final val Partial = "partial"
 
 
   def fromString(value: String): String = value.toLowerCase match {
@@ -31,6 +32,7 @@ object AssessmentType {
     case "error" => Error
     case "indeterminate" => Indeterminate
     case "inapplicable" => Inapplicable
+    case "partial" => Partial
     case _ => throw new Exception(s"Unable to match `$value` to an AssessmentType")
   }
 }

@@ -28,9 +28,24 @@ object Data {
     }
   }
 
-  def checkBusinessName(givenName: String, business: Option[Business]): String = {
+  def checkExactBusinessNameMatch(givenName: String, business: Option[Business]): String = {
     if (business.isDefined) {
-      checkName(givenName, business.get.companyName)
+      checkExactNameMatch(givenName, business.get.companyName)
+    } else {
+      Inapplicable
+    }
+  }
+
+  def checkExactNameMatch(givenName: String, expectedName: String): String = {
+    givenName match {
+      case `expectedName` => Yes
+      case _ => No
+    }
+  }
+
+  def checkBusinessName(expectedName: String, business: Option[Business]): String = {
+    if (business.isDefined) {
+      checkName(business.get.companyName, expectedName)
     } else {
       Inapplicable
     }
@@ -39,6 +54,7 @@ object Data {
   def checkName(givenName: String, expectedName: String): String = {
     givenName match {
       case `expectedName` => Yes
+      case givenName if expectedName.contains(givenName) => Partial
       case _ => No
     }
   }

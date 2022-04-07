@@ -19,7 +19,7 @@ package uk.gov.hmrc.bars.stub.controllers
 import play.api.http.Status
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc._
-import uk.gov.hmrc.bars.stub.helpers.Data.{checkName, constructPersonalName}
+import uk.gov.hmrc.bars.stub.helpers.Data.{checkExactNameMatch, checkName, constructPersonalName}
 import uk.gov.hmrc.bars.stub.helpers.EISCDHelper.generateIBAN
 import uk.gov.hmrc.bars.stub.helpers.ValidationHelper.{validateAccount, validateAddress}
 import uk.gov.hmrc.bars.stub.helpers.{EISCDHelper, ValidationException}
@@ -106,7 +106,7 @@ class PersonalAssessStubController @Inject()(personalAccountData: Map[AccountDet
         PersonalAssessmentV3(
           accountNumberWithSortCodeIsValid = accountData.get.accountNumberWithSortCodeIsValid,
           accountExists = if (accountData.get.accountNumberWithSortCodeIsValid == No) Inapplicable else accountData.get.accountExists,
-          nameMatches = if (accountData.get.accountExists == Inapplicable || accountData.get.accountNumberWithSortCodeIsValid == No) Inapplicable else checkName(givenName, accountData.get.name),
+          nameMatches = if(accountData.get.accountExists == Inapplicable || accountData.get.accountNumberWithSortCodeIsValid == No) Inapplicable else checkExactNameMatch(givenName, accountData.get.name),
           addressMatches = if (accountData.get.accountNumberWithSortCodeIsValid == No) Inapplicable else accountData.get.addressMatches,
           nonConsented = if (accountData.get.accountNumberWithSortCodeIsValid == No) Inapplicable else accountData.get.nonConsented,
           subjectHasDeceased = if (accountData.get.accountNumberWithSortCodeIsValid == No) Inapplicable else accountData.get.subjectHasDeceased,
@@ -139,13 +139,14 @@ class PersonalAssessStubController @Inject()(personalAccountData: Map[AccountDet
         PersonalAssessmentV4(
           accountNumberIsWellFormatted = accountData.get.accountNumberWithSortCodeIsValid,
           accountExists = if (accountData.get.accountNumberWithSortCodeIsValid == No) Inapplicable else accountData.get.accountExists,
-          nameMatches = if (accountData.get.accountExists == Inapplicable || accountData.get.accountNumberWithSortCodeIsValid == No) Inapplicable else checkName(givenName, accountData.get.name),
+          nameMatches = if(accountData.get.accountExists == Inapplicable || accountData.get.accountNumberWithSortCodeIsValid == No) Inapplicable else checkName(givenName, accountData.get.name),
           nonStandardAccountDetailsRequiredForBacs = if (accountData.get.accountNumberWithSortCodeIsValid == No) Inapplicable else accountData.get.nonStandardAccountDetailsRequiredForBacs,
           sortCodeIsPresentOnEISCD = accountData.get.sortCodeIsPresentOnEISCD,
           sortCodeBankName = accountData.get.sortCodeBankName,
           sortCodeSupportsDirectDebit = accountData.get.sortCodeSupportsDirectDebit,
           sortCodeSupportsDirectCredit = accountData.get.sortCodeSupportsDirectCredit,
-          iban = if (accountData.get.accountNumberWithSortCodeIsValid == No) None else generateIBAN(branch.data.ibanPrefix, account)
+          iban = if (accountData.get.accountNumberWithSortCodeIsValid == No) None else generateIBAN(branch.data.ibanPrefix, account),
+          accountName = if (checkName(givenName, accountData.get.name) == Partial) Some(accountData.get.name) else None
         )
     }
   }

@@ -13,6 +13,8 @@ The supported endpoints are:
 
 This mock will mirror the functionality in the Bank Account Reputation Service (BARS).  To integrate with these endpoints you should refer to the [BARS documentation](https://github.com/hmrc/bank-account-reputation/blob/master/docs/README.md).
 
+****Note*** * The `/verify/*` endpoints will tell you if a name has been partially matched.  To replicate this behaviour any substring of the name associated with an account below will return `nameMatches: partial`.  As an example if you find the name `Adena Shuman` in the data below, sending over `Adena` will return `nameMatches: partial`.  This is dumb behaviour, so it's worth noting that send over `a` will also return `nameMatches: partial` as it's a simple substring match and the name `Adena Shuman` contains the letter `a`. 
+
 If you have any queries relating to this test data, come and have a chat with us in [#team-cip-attribute-validation](https://hmrcdigital.slack.com/archives/team-cip-attribute-validation)
 
 ## Starting the uk.gov.hmrc.bars.stub
