@@ -26,7 +26,8 @@ case class BusinessAssessmentV3(accountNumberIsWellFormatted: String,
                                 nameMatches: String,
                                 sortCodeSupportsDirectDebit: String,
                                 sortCodeSupportsDirectCredit: String,
-                                iban: Option[String] = None)
+                                iban: Option[String] = None,
+                                accountName: Option[String] = None)
 
 
 object BusinessAssessmentV3 {

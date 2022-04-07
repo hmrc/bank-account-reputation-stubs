@@ -211,6 +211,35 @@ class PersonalAssessV4StubControllerTest extends AnyFunSuite {
     assertThat(initResponse).isEqualTo(expectedResult)
   }
 
+  test("Account is known and name is a partial match") {
+    val expectedResult = PersonalAssessmentV4(
+      accountNumberIsWellFormatted = Yes,
+      accountExists = Yes,
+      nameMatches = Partial,
+      nonStandardAccountDetailsRequiredForBacs = No,
+      sortCodeIsPresentOnEISCD = Yes,
+      sortCodeSupportsDirectDebit = Yes,
+      sortCodeSupportsDirectCredit = Yes,
+      sortCodeBankName = Some("BARCLAYS BANK UK PLC"),
+      iban = Some("GB21BARC20710644344677"),
+      accountName = Some("Felipa Doherty")
+    )
+
+    val fakeRequest = FakeRequest(method = "POST", path = s"/verify/personal")
+      .withHeaders(DEFAULT_TEST_HEADER)
+      .withJsonBody(Json.toJson(PersonalRequest(
+        AccountDetails("207106", "44344677"),
+        Subject(
+          name = Some("Felipa")
+        ))))
+
+    val result: Future[Result] = personalAssessStubController.assessV4.apply(fakeRequest)
+    val initResponse = contentAsJson(result)(Timeout.zero).as[PersonalAssessmentV4]
+
+    assertThat(result.value.get.get.header.status).isEqualTo(Status.OK)
+    assertThat(initResponse).isEqualTo(expectedResult)
+  }
+
   test("Account fails mod check") {
     val expectedResult = PersonalAssessmentV4(
       accountNumberIsWellFormatted = No,

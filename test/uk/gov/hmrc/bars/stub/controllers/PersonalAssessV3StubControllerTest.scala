@@ -254,4 +254,35 @@ class PersonalAssessV3StubControllerTest extends AnyFunSuite {
     assertThat(result.value.get.get.header.status).isEqualTo(Status.OK)
     assertThat(initResponse).isEqualTo(expectedResult)
   }
+
+  test("Assess V3 does not return partial") {
+    val expectedResult = PersonalAssessmentV3(
+      accountNumberWithSortCodeIsValid = Yes,
+      accountExists = Yes,
+      nameMatches = No,
+      addressMatches = Yes,
+      nonConsented = No,
+      subjectHasDeceased = No,
+      nonStandardAccountDetailsRequiredForBacs = No,
+      sortCodeIsPresentOnEISCD = Yes,
+      sortCodeBankName = Some("BARCLAYS BANK UK PLC"),
+      sortCodeSupportsDirectDebit = Yes,
+      sortCodeSupportsDirectCredit = Yes
+    )
+
+    val fakeRequest = FakeRequest(method = "POST", path = s"/personal/v3/assess")
+      .withHeaders(DEFAULT_TEST_HEADER)
+      .withJsonBody(Json.toJson(PersonalRequest(
+        AccountDetails("207106", "44344677"),
+        Subject(
+          name = Some("Felipa"),
+          address = Some(Address(lines = List("1 Test Town"), town = Some("Testville"), postcode = Some("TS33 1ST")))
+        ))))
+
+    val result: Future[Result] = personalAssessStubController.assess.apply(fakeRequest)
+    val initResponse = contentAsJson(result)(Timeout.zero).as[PersonalAssessmentV3]
+
+    assertThat(result.value.get.get.header.status).isEqualTo(Status.OK)
+    assertThat(initResponse).isEqualTo(expectedResult)
+  }
 }

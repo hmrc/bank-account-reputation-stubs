@@ -26,7 +26,8 @@ case class PersonalAssessmentV4(accountNumberIsWellFormatted: String,
                                 sortCodeBankName: Option[String] = None,
                                 sortCodeSupportsDirectDebit: String,
                                 sortCodeSupportsDirectCredit: String,
-                                iban: Option[String] = None)
+                                iban: Option[String] = None,
+                                accountName: Option[String] = None)
 
 
 object PersonalAssessmentV4 {
